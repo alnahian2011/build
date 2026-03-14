@@ -20,7 +20,8 @@ jobs:
             BUILD_DESKTOP=no \
             KERNEL_CONFIGURE=no \
             COMPRESS_OUTPUTIMAGE=sha,img \
-            PREFER_DOCKER=no"
+            PREFER_DOCKER=no \
+            IGNORE_UPDATES=yes"
 
       - name: Upload image
         uses: actions/upload-artifact@v4
