@@ -11,16 +11,26 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     steps:
       - uses: actions/checkout@v4
         with:
           ref: tx6s-main
-          fetch-depth: 0
-      - uses: armbian/build@main
+          fetch-depth: 1
+      - name: Build Armbian
+        run: |
+          git clone --depth=1 --branch=tx6s-main https://github.com/alnahian2011/build.git armbian
+          cd armbian
+          sudo ./compile.sh \
+            BOARD=tanix-tx6s-axp313 \
+            BRANCH=current \
+            RELEASE=jammy \
+            BUILD_MINIMAL=yes \
+            BUILD_DESKTOP=no \
+            KERNEL_CONFIGURE=no \
+            COMPRESS_OUTPUTIMAGE=sha,img
+      - name: Upload image
+        uses: actions/upload-artifact@v4
         with:
-          armbian_token: "${{ secrets.GITHUB_TOKEN }}"
-          armbian_release: "${{ github.event.inputs.release }}"
-          armbian_target: "build"
-          armbian_board: "tanix-tx6s-axp313"
-          armbian_branch: "${{ github.event.inputs.branch }}"
+          name: tx6s-image
+          path: armbian/output/images/*.img*
