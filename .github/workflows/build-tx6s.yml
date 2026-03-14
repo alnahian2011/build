@@ -7,28 +7,33 @@ on:
         default: 'jammy'
       branch:
         description: 'Kernel branch'
-        default: 'current'
+        default: 'legacy'
 
 jobs:
   build:
     runs-on: ubuntu-22.04
+    env:
+      COLUMNS: "160"
     steps:
       - uses: actions/checkout@v4
         with:
           ref: tx6s-main
           fetch-depth: 1
+
       - name: Build Armbian
         run: |
           git clone --depth=1 --branch=tx6s-main https://github.com/alnahian2011/build.git armbian
           cd armbian
-          sudo ./compile.sh \
+          ./compile.sh \
             BOARD=tanix-tx6s-axp313 \
-            BRANCH=current \
+            BRANCH=legacy \
             RELEASE=jammy \
             BUILD_MINIMAL=yes \
             BUILD_DESKTOP=no \
             KERNEL_CONFIGURE=no \
-            COMPRESS_OUTPUTIMAGE=sha,img
+            COMPRESS_OUTPUTIMAGE=sha,img \
+            CONTAINER_COMPAT=yes
+
       - name: Upload image
         uses: actions/upload-artifact@v4
         with:
