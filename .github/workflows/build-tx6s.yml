@@ -6,6 +6,11 @@ jobs:
   build:
     runs-on: ubuntu-22.04
     steps:
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y git curl
+
       - name: Build Armbian
         run: |
           sudo useradd -m -s /bin/bash builder
@@ -18,7 +23,9 @@ jobs:
             BUILD_MINIMAL=yes \
             BUILD_DESKTOP=no \
             KERNEL_CONFIGURE=no \
-            COMPRESS_OUTPUTIMAGE=sha,img"
+            COMPRESS_OUTPUTIMAGE=sha,img \
+            PREFER_DOCKER=no \
+            FORCE_USE_RAMDISK=no"
 
       - name: Upload image
         uses: actions/upload-artifact@v4
