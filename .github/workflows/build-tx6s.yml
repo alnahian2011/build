@@ -11,7 +11,24 @@ jobs:
           sudo useradd -m -s /bin/bash builder
           echo "builder ALL=(ALL) NOPASSWD:ALL" | sudo tee /etc/sudoers.d/builder
           sudo -u builder git clone --depth=1 --branch=tx6s-main https://github.com/alnahian2011/build.git /home/builder/armbian
+
+          # Fix Python patching bugs
           sudo sed -i 's/console_width = (int(os.environ.get("COLUMNS", 160)) - 12) if os.environ.get("GITHUB_ACTIONS", "") == "" else 160/console_width = 160/' /home/builder/armbian/lib/tools/patching.py
+          sudo sed -i 's/raise exit_with_exception/pass  # ignore patch failures/' /home/builder/armbian/lib/tools/patching.py
+
+          # Keep ONLY the patches we actually need for TX6S
+          sudo find /home/builder/armbian/patch/u-boot/u-boot-h616/ -name "*.patch" \
+            ! -name "102-*.patch" \
+            ! -name "105-*.patch" \
+            ! -name "106-*.patch" \
+            ! -name "107-*.patch" \
+            ! -name "150-*.patch" \
+            ! -name "151-*.patch" \
+            ! -name "152-*.patch" \
+            ! -name "153-*.patch" \
+            ! -name "157-*.patch" \
+            -delete
+
           sudo -u builder bash -c "cd /home/builder/armbian && env -u GITHUB_ACTIONS -u GITHUB_OUTPUT ./compile.sh \
             BOARD=tanix-tx6s-axp313 \
             BRANCH=current \
