@@ -7,15 +7,12 @@ jobs:
     runs-on: ubuntu-22.04
     steps:
       - name: Build Armbian
-        env:
-          GITHUB_ACTIONS: "true"
-          COLUMNS: "160"
         run: |
           sudo useradd -m -s /bin/bash builder
           echo "builder ALL=(ALL) NOPASSWD:ALL" | sudo tee /etc/sudoers.d/builder
           sudo -u builder git clone --depth=1 --branch=v20250306 https://github.com/NickAlilovic/build.git /home/builder/armbian
           sudo sed -i 's/console_width = (int(os.environ.get("COLUMNS", 160)) - 12) if os.environ.get("GITHUB_ACTIONS", "") == "" else 160/console_width = 160/' /home/builder/armbian/lib/tools/patching.py
-          sudo -u builder bash -c "cd /home/builder/armbian && GITHUB_ACTIONS=true COLUMNS=160 ./compile.sh \
+          sudo -u builder bash -c "cd /home/builder/armbian && env -u GITHUB_ACTIONS -u GITHUB_OUTPUT ./compile.sh \
             BOARD=tanix-tx6s-axp313 \
             BRANCH=current \
             RELEASE=jammy \
