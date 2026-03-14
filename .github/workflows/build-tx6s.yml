@@ -1,0 +1,26 @@
+name: Build TX6S Image
+on:
+  workflow_dispatch:
+    inputs:
+      release:
+        description: 'Ubuntu/Debian release'
+        default: 'jammy'
+      branch:
+        description: 'Kernel branch'
+        default: 'current'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: tx6s-main
+          fetch-depth: 0
+      - uses: armbian/build@main
+        with:
+          armbian_token: "${{ secrets.GITHUB_TOKEN }}"
+          armbian_release: "${{ github.event.inputs.release }}"
+          armbian_target: "build"
+          armbian_board: "tanix-tx6s-axp313"
+          armbian_branch: "${{ github.event.inputs.branch }}"
