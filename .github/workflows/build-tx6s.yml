@@ -8,11 +8,11 @@ jobs:
     steps:
       - name: Build Armbian
         run: |
-          git clone --depth=1 --branch=v20250306 https://github.com/NickAlilovic/build.git armbian
+          git clone --depth=1 --branch=v20250306 https://github.com/NickAlilovic/build.git /home/runner/armbian
           sudo useradd -m -s /bin/bash builder
           echo "builder ALL=(ALL) NOPASSWD:ALL" | sudo tee /etc/sudoers.d/builder
-          sudo chown -R builder:builder armbian
-          sudo -u builder bash -c "cd $(pwd)/armbian && ./compile.sh \
+          sudo chown -R builder:builder /home/runner/armbian
+          sudo -u builder bash -c "cd /home/runner/armbian && ./compile.sh \
             BOARD=tanix-tx6s-axp313 \
             BRANCH=current \
             RELEASE=jammy \
@@ -25,4 +25,4 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: tx6s-image
-          path: armbian/output/images/*.img*
+          path: /home/runner/armbian/output/images/*.img*
